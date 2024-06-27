@@ -1,0 +1,14 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/containers/golang/Dockerfile
+    ports:
+      - "81:8080"
+    command: ./bin/app
+    networks:
+      - backend1
+
+networks:
+  backend1:
+    driver: bridge

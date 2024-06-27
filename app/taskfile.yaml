@@ -1,0 +1,63 @@
+version: '3'
+
+env:
+  # ENV CONFIG PATH
+  CONFIG_PATH: "{{.TASKFILE_DIR}}/config/config.yaml"
+  MIGRATION_DIR: "{{.TASKFILE_DIR}}/migrations"
+
+  # ENV DB
+  DB_DRIVER: postgres
+  DB_HOST: localhost
+  DB_USER: dev
+  DB_PASSWORD: dev
+  DB_NAME: dev
+  DB_PORT: 6433
+  DB_SSLMODE: disable
+
+  # ENV GOOSE
+
+  GOOSE_DRIVER: $DB_DRIVER
+  GOOSE_DBSTRING: user=$DB_USER dbname=$DB_NAME sslmode=$DB_SSLMODE host=$DB_HOST password=$DB_PASSWORD port=$DB_PORT
+  GOOSE_MIGRATION_DIR: "{{.MIGRATION_DIR}}"
+
+tasks:
+  run:
+    desc: "run application on local server"
+    cmd:
+      go run cmd/app/main.go
+
+  build:
+    desc: "build docker compose"
+    cmds:
+      - docker compose -f ../docker-compose-db.yaml up --build -d
+      - docker compose -f ../docker-compose-app.yaml up --build
+
+  up:
+    desc: "up docker"
+    cmds:
+      - docker compose -f ../docker-compose-db.yaml up -d
+      - docker compose -f ../docker-compose-app.yaml up
+
+  down:
+    desc: "down docker"
+    cmds:
+      - docker compose -f ../docker-compose-db.yaml down
+      - docker compose -f ../docker-compose-app.yaml down
+
+  # Only db docker-compose
+  db:up:
+    desc: "start only db docker"
+    cmd:
+      docker compose -f ../docker-compose-db.yaml up -d
+  db:down:
+    desc: "down db docker"
+    cmd:
+      docker compose -f ../docker-compose-db.yaml down
+
+  # GOOSE COMMAND
+  goose:
+    desc: "run command goose"
+    cmd:
+      goose {{.command}}
+    requires:
+      vars: [command]

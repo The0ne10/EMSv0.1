@@ -1,0 +1,17 @@
+env: "local"
+
+# config postgresql
+# host для подключения к базе данныт когда два контейнера включены 172.17.0.1
+postgres:
+  host: localhost
+  dbname: dev
+  user: dev
+  password: dev
+  port: 6433
+  ssl_mode: disable
+
+# HTTPServer
+http_server:
+  addr: ":8085"
+  timeout: 5s
+  time_idle: 60s
